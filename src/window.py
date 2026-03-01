@@ -40,6 +40,13 @@ class TicTacToeWindow:
         """Εμφανίζει ένα μήνυμα στον χρήστη (π.χ. ποιος κέρδισε)."""
         pass
 
+    def start_game(self, game_logic, player1, player2):
+        """
+        Συνδέει τη λογική του παιχνιδιού και τους παίκτες με το UI 
+        και ξεκινάει ή κάνει reset το παιχνίδι.
+        """
+        pass
+
     def run(self):
         """Ξεκινάει τον κύριο βρόχο (main loop) της διεπαφής."""
         pass
