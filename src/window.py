@@ -43,3 +43,9 @@ class TicTacToeWindow:
     def run(self):
         """Ξεκινάει τον κύριο βρόχο (main loop) της διεπαφής."""
         pass
+
+if __name__ == "__main__":
+    # Κώδικας για μεμονωμένη δοκιμή του παραθύρου
+    print("Δοκιμή παραθύρου (Window Test)")
+    pass
+

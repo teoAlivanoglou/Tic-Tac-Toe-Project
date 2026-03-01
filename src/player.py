@@ -39,3 +39,9 @@ class RandomBot(Player):
     def get_move(self, board):
         """Βρίσκει κενές θέσεις στο ταμπλό και επιλέγει μία τυχαία."""
         pass
+
+if __name__ == "__main__":
+    # Κώδικας για μεμονωμένη δοκιμή των παικτών
+    print("Δοκιμή παικτών (Players Test)")
+    pass
+
