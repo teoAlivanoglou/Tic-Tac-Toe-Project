@@ -5,11 +5,13 @@
 
 import tkinter as tk
 
+
 class TicTacToeWindow:
     """
     Κλάση που διαχειρίζεται το παράθυρο και τα γραφικά στοιχεία (widgets)
     του παιχνιδιού Τρίλιζα.
     """
+
     def __init__(self):
         """Αρχικοποιεί το βασικό παράθυρο και τις ιδιότητές του."""
         pass
@@ -29,7 +31,7 @@ class TicTacToeWindow:
     def update_cell(self, row, col, symbol):
         """
         Ενημερώνει ένα συγκεκριμένο κελί του ταμπλό με το σύμβολο του παίκτη.
-        
+
         :param row: Η γραμμή της κίνησης (0-2)
         :param col: Η στήλη της κίνησης (0-2)
         :param symbol: Το σύμβολο ('X' ή 'O')
@@ -42,7 +44,7 @@ class TicTacToeWindow:
 
     def start_game(self, game_logic, player1, player2):
         """
-        Συνδέει τη λογική του παιχνιδιού και τους παίκτες με το UI 
+        Συνδέει τη λογική του παιχνιδιού και τους παίκτες με το UI
         και ξεκινάει ή κάνει reset το παιχνίδι.
         """
         pass
@@ -51,8 +53,8 @@ class TicTacToeWindow:
         """Ξεκινάει τον κύριο βρόχο (main loop) της διεπαφής."""
         pass
 
+
 if __name__ == "__main__":
     # Κώδικας για μεμονωμένη δοκιμή του παραθύρου
     print("Δοκιμή παραθύρου (Window Test)")
     pass
-

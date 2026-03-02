@@ -7,6 +7,7 @@ from window import TicTacToeWindow
 from game import Game
 from player import HumanPlayer, RandomBot
 
+
 def main():
     """
     Κύρια συνάρτηση που εκκινεί την εφαρμογή.
@@ -19,6 +20,7 @@ def main():
     # app_window.start_game(game_logic, player1, player2)
     # app_window.run()
     pass
+
 
 if __name__ == "__main__":
     pass
