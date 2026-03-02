@@ -19,6 +19,7 @@ class Game:
 
         :param row: Η γραμμή της κίνησης
         :param col: Η στήλη της κίνησης
+        :return: True αν η κίνηση ήταν έγκυρη, False αλλιώς
         """
         pass
 
@@ -36,10 +37,6 @@ class Game:
 
     def check_win(self):
         """Ελέγχει αν υπάρχει τριάδα (οριζόντια, κάθετα, διαγώνια) για κάποιον παίκτη."""
-        pass
-
-    def check_lose(self):
-        """Ελέγχει αν ο παίκτης έχασε (χρήσιμο κυρίως για έλεγχο από την πλευρά του bot)."""
         pass
 
     def check_draw(self):
