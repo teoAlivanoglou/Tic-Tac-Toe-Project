@@ -15,6 +15,13 @@
 ## Οδηγίες για GitHub μέσα στο vscode
 To vscode, στα αριστερά, στο tab για το source control (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd>), έχει κάποιες διευκολύνσεις για το github:
 
+- Πρώτη φορά - Κατέβασμα του project (Clone):
+    1. Πατάμε <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> και γράφουμε **Git: Clone**.
+    2. Επιλέγουμε **Clone from GitHub** και συνδεόμαστε με τον λογαριασμό μας αν μας ζητηθεί.
+    3. Στο search box που εμφανίζεται, βρίσκουμε το repository της ομάδας και το επιλέγουμε. Αν δεν βλέπουμε κάποιο repository, μπορούμε απλά να κάνουμε copy paste το link του repository.
+    4. Επιλέγουμε έναν φάκελο στον υπολογιστή μας όπου θα αποθηκευτεί το project και πατάμε **Select as Repository Destination**.
+    5. Πατάμε **Open** στο μήνυμα που εμφανίζεται για να ανοίξουμε το project.
+
 - Πώς δημιουργούμε καινούργιο Branch:
     1. Πατάμε τις 3 τελίτσες (`...`) πάνω δεξιά στο πάνελ του Source Control, δεξιά απο το `Changes` (πάμε το ποντίκι από πάνω για να εμφανιστούν).
     2. Επιλέγουμε **Branch** -> **Create Branch From...**
