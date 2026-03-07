@@ -11,7 +11,7 @@ class Game:
 
     def __init__(self):
         """Αρχικοποιεί το ταμπλό, τους παίκτες και τις μεταβλητές του παιχνιδιού."""
-        pass
+        self.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "]
 
     def play_turn(self, row, col):
         """
@@ -27,7 +27,7 @@ class Game:
         """
         Επιστρέφει τη δομή δεδομένων που αναπαριστά το ταμπλό.
         """
-        pass
+        return self.board
 
     def get_current_player(self):
         """
