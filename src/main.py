@@ -20,6 +20,8 @@ def main():
     # app_window.start_game(game_logic, player1, player2)
     # app_window.run()
 
+    # Ολό το παρακάτω θα φύγει όταν έρθει το UI γιατί το game loop θα γίνεται εκεί
+
     def print_board(board):
         """Εκτυπώνει το ταμπλό."""
         print()
@@ -34,40 +36,36 @@ def main():
 
     # Αρχικοποίηση ταμπλό και παικτών
 
-    game_logic = Game()
-
-    board = game_logic.get_board()
-    bot1 = RandomBot("X")  # Παίκτης 1
+    game = Game(3)
+    bot1 = BetterBot("X")  # Παίκτης 1
     bot2 = BetterBot("O")  # Παίκτης 2
-    players = [bot1, bot2]
-    current = 0  # Δείκτης για τον τρέχοντα παίκτη (0 ή 1)
+    game.start(bot1, bot2)
 
     print(f"=== {type(bot1).__name__} vs {type(bot2).__name__} ===")
     print(f"Παίκτης 1: {type(bot1).__name__} ({bot1.symbol})")
     print(f"Παίκτης 2: {type(bot2).__name__} ({bot2.symbol})")
 
     # Ο μέγιστος αριθμός γύρων είναι όσες και οι θέσεις του ταμπλό
-    for turn in range(len(board)):
-        player = players[current]
-        move = player.get_move(board)
+    for turn in range(game.get_board_size() * game.get_board_size()):
+        player = game.get_current_player()
 
-        # Τοποθετεί το σύμβολο στο ταμπλό (πάντα εδώ, ανεξάρτητα από το bot)
-        # Γενικά καλό είναι να αποφύγουμε να αφήνουμε τα bot να επηρεάζουν το ταμπλό
-        # Καλύτερα είναι τα bot (και οι παίχτες) να λένε στο game manager "Θέλω να παίξω εκεί (game_logic.play_turn(x, y))"
-        board[move] = player.symbol
+        valid_move = False
+
+        # Αμυντικός προγραμματισμός
+        while not valid_move:
+            move = player.get_move(game)
+            valid_move = game.play_turn(move)
 
         print(
             f"--- Γύρος {turn + 1}: {type(player).__name__} ({player.symbol}) παίζει στη θέση {move} ---"
         )
+        board = game.get_board()
         print_board(board)
 
-        # Έλεγχος νίκης με check_win του ίδιου του παίκτη
-        # Όπως και πιο πάνω, ίσως καλύτερα να ήταν αυτός ο έλεγχος να γίνεται απο το game manager
-        if player.check_win(board, player.symbol):
+        if game.check_win(player.symbol):
             print(f"Νίκησε ο {type(player).__name__} ({player.symbol})!")
             break
 
-        current = 1 - current  # Εναλλαγή παίκτη (0→1, 1→0)
     else:
         print("Ισοπαλία!")
 

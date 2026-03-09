@@ -3,6 +3,7 @@
 """
 
 import random
+from game import Game
 
 
 class Player:
@@ -20,52 +21,12 @@ class Player:
         """
         self.symbol = symbol
 
-    def get_move(self, board):
+    def get_move(self, game):
         """
         Υπολογίζει και επιστρέφει την επόμενη κίνηση του παίκτη.
         Πρέπει να υλοποιηθεί από τις υποκλάσεις.
         """
         pass
-
-
-class Bot(Player):
-    """
-    Βασική κλάση (Base Class) για αναπαράσταση ενός bot.
-    """
-
-    is_human = False
-
-    def check_win(self, board, symbol):
-        """Ελέγχει αν υπάρχει τριάδα (οριζόντια, κάθετα, διαγώνια) για κάποιον παίκτη."""
-
-        if (
-            (board[0] == board[1] == board[2] == symbol)
-            or (board[3] == board[4] == board[5] == symbol)
-            or (board[6] == board[7] == board[8] == symbol)
-        ):
-            return True  # Ελεγχος Γραμμων
-
-        if (
-            (board[0] == board[3] == board[6] == symbol)
-            or (board[1] == board[4] == board[7] == symbol)
-            or (board[2] == board[5] == board[8] == symbol)
-        ):
-            return True  # Ελεγχος Στηλων
-
-        if (board[0] == board[4] == board[8] == symbol) or (
-            board[6] == board[4] == board[2] == symbol
-        ):
-            return True  # Διαγωνιος
-
-        return False
-
-    def get_empty_spaces(self, board):
-        """Βρίσκει τις κενές θέσεις στο ταμπλό και επιστρέφει μία λίστα με αυτές"""
-        empty_spaces = []  # κενή λίστα που θα αποθηκεύσω τις ελεύθερες θέσεις
-        for i in range(9):
-            if board[i] == " ":
-                empty_spaces.append(i)
-        return empty_spaces
 
 
 class HumanPlayer(Player):
@@ -75,45 +36,42 @@ class HumanPlayer(Player):
 
     is_human = True
 
-    def get_move(self, board):
+    def get_move(self, game):
         """Επιστρέφει την κίνηση που επέλεξε ο χρήστης μέσω του UI."""
         pass
 
 
-class RandomBot(Bot):
+class RandomBot(Player):
     """
-    Κλάση που αναπαριστά έναν αυτοματοποιημένο παίκτη (Bot),
-    ο οποίος επιλέγει κινήσεις εντελώς τυχαία.
+    Κλάση που αναπαριστά έναν αυτοματοποιημένο παίκτη (Bot) ο οποίος επιλέγει κινήσεις εντελώς τυχαία.
     """
 
-    def get_move(self, board):
+    is_human = False
+
+    def get_move(self, game):
         """Βρίσκει κενές θέσεις στο ταμπλό και επιλέγει μία τυχαία."""
 
-        empty_spaces = self.get_empty_spaces(board)
-        return random.choice(empty_spaces)
+        return random.choice(game.get_empty_spaces())
 
 
-class BetterBot(Bot):
+class BetterBot(Player):
     """
-    Κλάση που αναπαριστά έναν αυτοματοποιημένο παίκτη (Bot),
-    ο οποίος επιλέγει κινήσεις πιο μεθοδικά.
+    Κλάση που αναπαριστά έναν αυτοματοποιημένο παίκτη (Bot) ο οποίος επιλέγει κινήσεις πιο μεθοδικά.
     """
 
-    def get_move(self, board):
+    is_human = False
+
+    def get_move(self, game):
         """Βρίσκει κενές θέσεις στο ταμπλό και επιλέγει μία μεθοδικά."""
 
-        empty_spaces = self.get_empty_spaces(board)
+        empty_spaces = game.get_empty_spaces()
 
         # Επίθεση
         for i in empty_spaces:
             # Δοκιμάζει αν αυτή η κίνηση νικάει
-            board[i] = self.symbol
-            if self.check_win(board, self.symbol):
+            if game.check_win(self.symbol, i):
                 # Νικάει άρα "παίζει" εκεί
                 return i
-
-            # Αν δεν νικάει, επαναφέρει το ταμπλό
-            board[i] = " "
 
         # Άμυνα
         for i in empty_spaces:
@@ -123,15 +81,10 @@ class BetterBot(Bot):
                 enemy_symbol = "X"
 
             # Δοκιμάζει αν με αυτή η κίνηση νικάει ο αντίπαλος
-            board[i] = enemy_symbol
-            if self.check_win(board, enemy_symbol):
+            if game.check_win(enemy_symbol, i):
                 # Αν ο αντίπαλος παίξει εκεί τότε νικάει.
                 # Άρα πρέπει να τον μπλοκάρει!
-                board[i] = self.symbol
                 return i
-
-            # Αν δεν χρειάζεται να μπλοκάρει, επαναφέρει το ταμπλό
-            board[i] = " "
 
         # Δεν μπορεί ούτε να νικήσει ούτε χρειάζεται να μπλοκάρει, οπότε διαλέγει τυχαία
         return random.choice(empty_spaces)
@@ -141,18 +94,20 @@ if __name__ == "__main__":
     # Κώδικας για μεμονωμένη δοκιμή των παικτών
     print("Δοκιμή παικτών (Players Test)")
 
+    game = Game(3)
+
     print("Δοκιμή RandomBot")
     bot = RandomBot("O")
-    board = ["X", "O", "X", "O", "X", " ", "O", "X", " "]
-    move = bot.get_move(board)
+    game._board = ["X", "O", "X", "O", "X", " ", "O", "X", " "]
+    move = bot.get_move(game)
     print(f"Το bot διάλεξε τη θέση: {move}")
 
     print("Δοκιμή BetterBot - Άμυνα")
     # Ο Χρηστης ειναι το "Χ" έχεις δύο στη σειρά (0 και 1).
     # Το bot ΠΡΕΠΕΙ να παίξει στο 2 για να σε σταματήσει.
     bot = BetterBot("O")
-    board = ["X", "X", " ", " ", "O", " ", " ", " ", " "]
-    move = bot.get_move(board)
+    game._board = ["X", "X", " ", " ", "O", " ", " ", " ", " "]
+    move = bot.get_move(game)
     print("Το ταμπλό έχει Χ στις θέσεις 0 και 1.")
     print(f"Το hard_bot επέλεξε τη θέση: {move}")
     if move == 2:
@@ -164,8 +119,8 @@ if __name__ == "__main__":
     # Το bot ειναι το "Ο" έχει δύο στη σειρά (3 και 4).
     # Το bot ΠΡΕΠΕΙ να παίξει στο 5 για να νικήσει.
     bot = BetterBot("O")
-    board = ["X", "X", " ", "O", "O", " ", " ", " ", " "]
-    move = bot.get_move(board)
+    game._board = ["X", "X", " ", "O", "O", " ", " ", " ", " "]
+    move = bot.get_move(game)
     print("Το ταμπλό έχει Ο στις θέσεις 3 και 4.")
     print(f"Το hard_bot επέλεξε τη θέση: {move}")
     if move == 5:
