@@ -8,14 +8,7 @@ class Game:
         self.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "]
 
     def play_turn(self, row, col):
-        """
-        Εκτελεί το γύρο ενός παίκτη στη δεδομένη θέση.
 
-        :param row: Η γραμμή της κίνησης
-        :param col: Η στήλη της κίνησης
-        :return: True αν η κίνηση ήταν έγκυρη, False αλλιώς
-        """
-        pass
 
     def get_board(self):
         return self.board
@@ -24,8 +17,29 @@ class Game:
         return self.get_current_symbol  # θα επιστρεφει Χ η Ο αναλογα ποιος παιζει που την παιρνει απο το αρχειο player.py
 
     def check_win(self):
-        """Ελέγχει αν υπάρχει τριάδα (οριζόντια, κάθετα, διαγώνια) για κάποιον παίκτη."""
-        pass
+    numbers = [] #φτιανω λιστα 
+    for i in self.board:
+        if i == "X":
+            numbers.append(1) #οπου βρει χ βαζει στην λιστα το 1
+        elif i == "O":
+            numbers.append(-1) #οπου βρει y βαζει στην λιστα το -1
+        else:
+            numbers.append(0) #οπου δεν βρει κατι  βαζει στην λιστα το 0 δηλαδη κενο
+    triades = [
+        (0, 1, 2), (3, 4, 5), (6, 7, 8), # Οριζόντια
+        (0, 3, 6), (1, 4, 7), (2, 5, 8), # Κάθετα
+        (0, 4, 8), (2, 4, 6) ]            # Διαγώνια
+
+    #  Ελέγχω τις τριάδες οριζοντιες καθετε και διαγωνιο αν υπαρχει καποια γεματη με Χ  η Ο
+    for a, b, c in triades:
+        athroisma = numbers[a] + numbers[b] + numbers[c]
+        
+        if athroisma == 3:
+            return "X"  # Βρήκαμε 3 x , κέρδισε το X!
+        if athroisma == -3:
+            return "O"  # Βρήκαμε 3 o, κέρδισε το O!
+
+    return None #ΔΕΝ ΒΡΕΘΗΚΕ 3αδα
 
     def check_draw(self):
         if " " not in self.board #ελεγχει αν υπαρχει εστω και ενα αδειο ωστε να δει αν ολο το ταμπλο γεμησε
