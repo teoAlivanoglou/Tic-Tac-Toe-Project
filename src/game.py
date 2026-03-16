@@ -17,8 +17,8 @@ class Game:
         
         self.board[thesi] = self.current_player
 
-        if self.current_player == "X": # παιζει ο παικτης 1, υποθετουμε οτι ειναι χ
-           self.current_player = "O"  # ο αλλος παικτης  τωρα παιζει που ειναι ο O
+        if self.current_player == "X": # παιζει ο παικτης 1, υποθετουμε οτι ειναι χ οπως το ξεκινησαμε και πανω πανω
+           self.current_player = "O"  # ο αλλος παικτης  τωρα παιζει που ειναι ο Ο
         else:
            self.current_player = "X"   # σε περιπτωση που το παραπανω ειναι αντιθετο. 
 

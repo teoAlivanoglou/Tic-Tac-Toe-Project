@@ -32,10 +32,7 @@ class Player:
     is_human = True  # Προεπιλογή: ανθρώπινος παίκτης
 
     def __init__(self, symbol):
-        """
-        Αρχικοποιεί τον παίκτη με το σύμβολό του.
-        :param symbol: Το σύμβολο του παίκτη ('X' ή 'O')
-        """
+    
         self.symbol = symbol
 
     def get_move(self, board):
@@ -54,7 +51,6 @@ class Bot(Player):
     is_human = False
 
     def check_win(self, board, symbol):
-        """Ελέγχει αν υπάρχει τριάδα (οριζόντια, κάθετα, διαγώνια) για κάποιον παίκτη."""
 
         if (
             (board[0] == board[1] == board[2] == symbol)
@@ -78,7 +74,6 @@ class Bot(Player):
         return False
 
     def get_empty_spaces(self, board):
-        """Βρίσκει τις κενές θέσεις στο ταμπλό και επιστρέφει μία λίστα με αυτές"""
         empty_spaces = []  # κενή λίστα που θα αποθηκεύσω τις ελεύθερες θέσεις
         for i in range(9):
             if board[i] == " ":
@@ -87,16 +82,11 @@ class Bot(Player):
 
 
 class HumanPlayer(Player):
-    """
-    Κλάση που αναπαριστά έναν ανθρώπινο παίκτη.
-    """
-
+   
     is_human = True
 
     def get_move(self, board):
-        """Επιστρέφει την κίνηση που επέλεξε ο χρήστης μέσω του UI."""
         pass
-
 
 class RandomBot(Player):
     is_human = False  # Αυτοματοποιημένος παίκτης
@@ -106,10 +96,10 @@ class RandomBot(Player):
 
         for i in range(9): #ΕΠΙΘΕΣΗ
             if matrix[i] == " ":
-               matrix[i] = "O" #(1)επιλεγει κινηση και στην κατω if ελεγχει αν κερδιζει με την κινηση αυτη
-               if winner(matrix, "O"): #ελεγχει αν νικησε η οχι
+               matrix[i] = self.symbol #(1)επιλεγει κινηση και στην κατω if ελεγχει αν κερδιζει με την κινηση αυτη
+               if self.check_win(matrix,self.symbol): #ελεγχει αν νικησε η οχι
                    return i #η τιμη αυτη επιστρεφεται μονο αν νικησει
-               matrix[i] = " " #σβηνω το "Ο" μην γεμησει το επομενο κενο καθως το συμπληρωσε στο (1)
+               matrix[i] = " " #σβηνει γιατι πρεπει να επαναφερει το ταμπλο στην αρχικη καταστσαη
             
         opponent = "X" if self.symbol == "O" else "O"   
 
