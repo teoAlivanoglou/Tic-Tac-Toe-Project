@@ -35,13 +35,8 @@ class Player:
     
         self.symbol = symbol
 
-    def get_move(self, board):
-        """
-        Υπολογίζει και επιστρέφει την επόμενη κίνηση του παίκτη.
-        Πρέπει να υλοποιηθεί από τις υποκλάσεις.
-        """
-        pass
-
+    def get_move(self, board, position=None):
+        return position # Επιστρέφει το index (0-8) που θα πάτησει ο άνθρωπος
 
 class Bot(Player):
     """
@@ -88,7 +83,10 @@ class HumanPlayer(Player):
     def get_move(self, board):
         pass
 
-class RandomBot(Player):
+    def __init__(self, symbol):
+        self.symbol = symbol
+
+class RandomBot(Bot):
     is_human = False  # Αυτοματοποιημένος παίκτης
 
     def get_move(self, board):
@@ -97,7 +95,7 @@ class RandomBot(Player):
         for i in range(9): #ΕΠΙΘΕΣΗ
             if matrix[i] == " ":
                matrix[i] = self.symbol #(1)επιλεγει κινηση και στην κατω if ελεγχει αν κερδιζει με την κινηση αυτη
-               if self.check_win(matrix,self.symbol): #ελεγχει αν νικησε η οχι
+               if winner(matrix,self.symbol): #ελεγχει αν νικησε η οχι
                    return i #η τιμη αυτη επιστρεφεται μονο αν νικησει
                matrix[i] = " " #σβηνει γιατι πρεπει να επαναφερει το ταμπλο στην αρχικη καταστσαη
             
@@ -105,17 +103,12 @@ class RandomBot(Player):
 
         for i in range(9):#ΑΜΥΝΑ
             if matrix[i] == " ":
-               matrix[i] = "X" #Δοκιμαζει κινηση ωστε να δεις αν θα χρειαστει να αμυνθει
+               matrix[i] = opponent #Δοκιμαζει κινηση ωστε να δεις αν θα χρειαστει να αμυνθει
                if winner(matrix, opponent):
-                   matrix[i] = " " #Αδιαζει την θεση που γεμισε ωστε να την συμπληρωσει το ΒΟΤ
                    return i 
                matrix[i] = " " #στην συνεχει την αδειαζει την θεση ωστε να ξανα κανει ελεγχο μετα 
 
-        free_choice = []
-        for i in range(9):
-            if matrix[i] == " ":
-                free_choice.append(i)
-
+        free_choice = self.get_empty_spaces(board) #Τυχαία κίνηση
         if free_choice:
             return random.choice(free_choice)
         return None
@@ -124,34 +117,41 @@ if __name__ == "__main__":
     # Κώδικας για μεμονωμένη δοκιμή των παικτών
     print("Δοκιμή παικτών (Players Test)")
 
-    print("Δοκιμή RandomBot")
+    # Δημιουργούμε ένα Bot που παίζει με το "O"
     bot = RandomBot("O")
-    board = ["X", "O", "X", "O", "X", " ", "O", "X", " "]
-    move = bot.get_move(board)
-    print(f"Το bot διάλεξε τη θέση: {move}")
 
-    print("Δοκιμή BetterBot - Άμυνα")
-    # Ο Χρηστης ειναι το "Χ" έχεις δύο στη σειρά (0 και 1).
-    # Το bot ΠΡΕΠΕΙ να παίξει στο 2 για να σε σταματήσει.
-    bot = BetterBot("O")
-    board = ["X", "X", " ", " ", "O", " ", " ", " ", " "]
-    move = bot.get_move(board)
-    print("Το ταμπλό έχει Χ στις θέσεις 0 και 1.")
-    print(f"Το hard_bot επέλεξε τη θέση: {move}")
-    if move == 2:
-        print("ΕΠΙΤΥΧΙΑ!")
-    else:
-        print("ΑΠΟΤΥΧΙΑ!")
-
-    print("Δοκιμή BetterBot - Επίθεση")
-    # Το bot ειναι το "Ο" έχει δύο στη σειρά (3 και 4).
-    # Το bot ΠΡΕΠΕΙ να παίξει στο 5 για να νικήσει.
-    bot = BetterBot("O")
-    board = ["X", "X", " ", "O", "O", " ", " ", " ", " "]
-    move = bot.get_move(board)
-    print("Το ταμπλό έχει Ο στις θέσεις 3 και 4.")
-    print(f"Το hard_bot επέλεξε τη θέση: {move}")
+    # ΤΕΣΤ 1: Επίθεση (Το bot πρέπει να κερδίσει)
+    # Το "O" έχει τα 3 και 4. Πρέπει να παίξει στο 5.
+    board_attack = ["X", "X", " ", 
+                    "O", "O", " ", 
+                    " ", " ", " "]
+    print("\nΤεστ 1 - Επίθεση:")
+    move = bot.get_move(board_attack)
+    print(f"Το ταμπλό έχει 'O' στα 3,4. Το bot έπαιξε στο: {move}")
     if move == 5:
-        print("ΕΠΙΤΥΧΙΑ!")
-    else:
-        print("ΑΠΟΤΥΧΙΑ!")
+        print("ΕΠΙΤΥΧΙΑ: Το Bot νίκησε!")
+    else: 
+        print("ΑΠΟΤΥΧΙΑ: Το Bot έχασε την ευκαιρία.")
+
+    # ΤΕΣΤ 2: Άμυνα (Το bot πρέπει να μπλοκάρει τον παίκτη)
+    # Ο παίκτης "X" έχει τα 0 και 1. Το bot πρέπει να παίξει στο 2.
+    board_defense = ["X", "X", " ", 
+                     " ", "O", " ", 
+                     " ", " ", " "]
+    print("\nΤεστ 2 - Άμυνα:")
+    move = bot.get_move(board_defense)
+    print(f"Το ταμπλό έχει 'X' στα 0,1. Το bot έπαιξε στο: {move}")
+    if move == 2: 
+        print("ΕΠΙΤΥΧΙΑ: Το Bot σε μπλόκαρε!")
+    else: 
+        print("ΑΠΟΤΥΧΙΑ: Το Bot σε άφησε να κερδίσεις.")
+
+    # ΤΕΣΤ 3: Τυχαία κίνηση
+    # Όλα κενά εκτός από ένα.
+    board_random = ["X", " ", " ", 
+                    " ", " ", " ", 
+                    " ", " ", " "]
+    print("\nΤεστ 3 - Τυχαία κίνηση:")
+    move = bot.get_move(board_random)
+    if move is not None and board_random[move] == " ":
+        print(f"ΕΠΙΤΥΧΙΑ: Το Bot διάλεξε την έγκυρη θέση {move}")

@@ -68,8 +68,25 @@ class Game:
 if __name__ == "__main__":
     # Κώδικας για μεμονωμένη δοκιμή της λογικής του παιχνιδιού
     print("Δοκιμή λογικής παιχνιδιού (Game Logic Test)")
-    
-    game = Game()
 
-    game.play_turn(0,0)
-    print("ταμπλο: ",game.get_board())
+    game = Game()
+    
+    print("--- Δοκιμή Λογικής Παιχνιδιού ---")
+    
+    game.play_turn(1, 1) # Παίζει ο X στο κέντρο
+    game.play_turn(0, 0) # Παίζει ο O πάνω αριστερά
+    game.play_turn(0, 1) # Παίζει ο X πάνω κέντρο
+    
+    # 3. Εκτύπωση ταμπλό
+    print(f"Ταμπλό: {game.board}")
+    
+    # 4. Έλεγχος αν υπάρχει νικητής
+    winner = game.check_win()
+    if winner:
+        print(f"Νικητής: {winner}")
+    else:
+        print("Το παιχνίδι συνεχίζεται...")
+
+    # 5. Reset
+    game.reset()
+    print(f"Ταμπλό μετά το reset: {game.board}")
