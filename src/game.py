@@ -8,7 +8,7 @@ class Game:
         self.board = [" ", " ", " ", " ", " ", " ", " ", " ", " "]
         self.current_player = "X" # υποθετουμε οτι ξεκιναμε με χ
 
-    def play_turn(self, row, col):
+    def make_move(self, row, col):
         
         thesi = row * 3 + col
         
@@ -73,9 +73,9 @@ if __name__ == "__main__":
     
     print("--- Δοκιμή Λογικής Παιχνιδιού ---")
     
-    game.play_turn(1, 1) # Παίζει ο X στο κέντρο
-    game.play_turn(0, 0) # Παίζει ο O πάνω αριστερά
-    game.play_turn(0, 1) # Παίζει ο X πάνω κέντρο
+    game.make_move(1, 1) # Παίζει ο X στο κέντρο
+    game.make_move(0, 0) # Παίζει ο O πάνω αριστερά
+    game.make_move(0, 1) # Παίζει ο X πάνω κέντρο
     
     # 3. Εκτύπωση ταμπλό
     print(f"Ταμπλό: {game.board}")

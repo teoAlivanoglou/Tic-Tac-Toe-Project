@@ -14,19 +14,52 @@ class TicTacToeWindow:
 
     def __init__(self):
         """Αρχικοποιεί το βασικό παράθυρο και τις ιδιότητές του."""
-        self.root = tk.tk() #καλει την βιβλιοθηκη ΤΚΙΝΤΕΡ 
-        self.root.title("TIC-TAC-TOE") #Εδω οριζουμε τι θα φαινεται στο πανω μερος του παραθυρου
-        self.root.geometry("300x400")
-        self.button = [] # μια κενη λιστα για να φτιαξουμε μετα τα κουμπια τα οποια λογικα θα ειναι αντικειμενα
-        self.create_widgets() #
+        self.root = tk.Tk()
+        self.root.title("TIC-TAC-TOE") # Τίτλος στο πάνω μέρος
+        self.root.geometry("300x400")  # Το μέγεθος του παραθύρου
+        self.buttons = []              # Λίστα για να αποθηκεύσουμε τα κουμπιά
+        self.create_widgets()          # Καλούμε τη συνάρτηση που φτιάχνει τα γραφικά
  
     def create_widgets(self):
-        """Δημιουργεί τα κουμπιά, τις ετικέτες και το ταμπλό του παιχνιδιού."""
-        pass
+        """Δημιουργεί τα στοιχεία του παιχνιδιού με απλό τρόπο."""
+        
+        # Μια ετικέτα για να βλέπουμε ποιος παίζει
+        self.label = tk.Label(self.root, text="Σειρά του παίκτη: X", font=('Arial', 14))
+        self.label.pack(pady=10) # pack σημαίνει "βάλτο στο παράθυρο"
+
+        # Ένα frame για να έχουμε τα κουμπιά μαζεμένα σε πλέγμα
+        self.container = tk.Frame(self.root)
+        self.container.pack()
+
+        # Φτιάχνουμε μια λίστα 3x3 γεμάτη None στην αρχή
+        self.buttons = [[None for _ in range(3)] for _ in range(3)]
+
+        # Με δύο for φτιάχνουμε τα 9 κουμπιά της τρίλιζας
+        for r in range(3):
+            for c in range(3):
+                # Δημιουργούμε το κουμπί
+                self.buttons[r][c] = tk.Button(
+                    self.container, 
+                    text="", 
+                    font=('Arial', 20), 
+                    width=5, 
+                    height=2, 
+                    command=lambda row=r, col=c: self._on_cell_click(row, col)
+                )
+                # Το τοποθετούμε στο πλέγμα (grid)
+                self.buttons[r][c].grid(row=r, column=c)
+
+        # Κουμπί για να ξεκινάει το παιχνίδι από την αρχή
+        self.reset_btn = tk.Button(self.root, text="Επανεκκίνηση", command=self._on_restart)
+        self.reset_btn.pack(pady=20)
 
     def draw_board(self):
         """Σχεδιάζει / επαναφέρει το πλέγμα 3x3 (καθαρίζει κείμενα και ξανα-ενεργοποιεί κουμπιά)."""
-        pass
+        # Καθαρίζει τα κείμενα από όλα τα κουμπιά
+        for row in self.buttons:
+            for btn in row:
+                btn.config(text="", state="normal")
+        self.label.config(text="Σειρά του παίκτη: X")
 
     def bind_events(self):
         """Συνδέει τις ενέργειες (π.χ. κλικ) των χρηστών με τις αντίστοιχες λειτουργίες."""
@@ -51,11 +84,13 @@ class TicTacToeWindow:
         Συνδέει τη λογική του παιχνιδιού και τους παίκτες με το UI
         και ξεκινάει ή κάνει reset το παιχνίδι.
         """
-        pass
-
+        # Συνδέουμε τη λογική από το άλλο αρχείο με το παράθυρο
+        self.game = game_logic
+        self.draw_board()     
     def run(self):
         """Ξεκινάει τον κύριο βρόχο (main loop) της διεπαφής."""
-        pass
+       # Αυτό κρατάει το παράθυρο ανοιχτό
+        self.root.mainloop()
 
     # ── Βοηθητικές μέθοδοι (private helpers) ─────────────────────────────
     # Οι παρακάτω μέθοδοι δεν αποτελούν μέρος του δημόσιου API, αλλά
@@ -70,7 +105,27 @@ class TicTacToeWindow:
         Callback όταν ο χρήστης πατάει κελί.
         Αγνοεί κλικ αν δεν είναι σειρά ανθρώπινου παίκτη (is_human=True).
         """
-        pass
+        # 1. Ρωτάμε τη λογική ποιος παίζει (επιστρέφει "X" ή "O")
+        symbol = self.game.get_current_player()
+        
+        # 2. Λέμε στη λογική να κάνει την κίνηση. Αν είναι έγκυρη (True):
+        if self.game.make_move(row, col):
+            # Γράφουμε το σύμβολο πάνω στο κουμπί που πατήθηκε
+            self.buttons[row][col].config(text=symbol)
+            
+            # 3. Ελέγχουμε αν κέρδισε κάποιος
+            winner = self.game.check_win()
+            if winner:
+                self.label.config(text=f"Νικητής ο παίκτης: {winner}!")
+                self._disable_board() # Κλειδώνουμε τα κουμπιά
+            # 4. Ελέγχουμε για ισοπαλία
+            elif self.game.check_draw():
+                self.label.config(text="Ισοπαλία!")
+                self._disable_board()
+            else:
+                # Αν δεν τελείωσε, αλλάζουμε το κείμενο στην ετικέτα για τον επόμενο
+                next_player = self.game.get_current_player()
+                self.label.config(text=f"Σειρά του παίκτη: {next_player}")
 
     def _process_next_turn(self):
         """
@@ -89,11 +144,24 @@ class TicTacToeWindow:
         Ελέγχει νίκη / ισοπαλία μετά από κάθε κίνηση.
         Ενημερώνει σκορ και μήνυμα. Επιστρέφει True αν το παιχνίδι τελείωσε.
         """
-        pass
+        winner = self.game.check_win() 
+        
+        if winner: 
+            if winner == "Draw":
+                self.label.config(text="Ισοπαλία!")
+            else:
+                self.label.config(text=f"Νικητής ο παίκτης: {winner}!")
+            
+            self._disable_board() 
+            return True
+            
+        return False
 
     def _disable_board(self):
         """Απενεργοποιεί όλα τα κουμπιά του ταμπλό στο τέλος του γύρου."""
-        pass
+        for row in self.buttons:
+            for btn in row:
+                btn.config(state="disabled")
 
     def _update_score_label(self):
         """Ενημερώνει την ετικέτα σκορ."""
@@ -101,10 +169,17 @@ class TicTacToeWindow:
 
     def _on_restart(self):
         """Callback για το κουμπί Επανεκκίνησης."""
-        pass
+        self.game.reset()
+        self.draw_board()
 
 
 if __name__ == "__main__":
     # Κώδικας για μεμονωμένη δοκιμή του παραθύρου
     print("Δοκιμή παραθύρου (Window Test)")
-    pass
+    
+    from game import Game # Φέρνουμε την κλάση από το game.py
+    
+    logic = Game()
+    app = TicTacToeWindow()
+    app.start_game(logic, None, None)
+    app.run()
