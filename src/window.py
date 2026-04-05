@@ -4,6 +4,7 @@
 """
 
 import tkinter as tk
+from tkinter import messagebox
 
 
 class TicTacToeWindow:
@@ -73,11 +74,12 @@ class TicTacToeWindow:
         :param col: Η στήλη της κίνησης (0-2)
         :param symbol: Το σύμβολο ('X' ή 'O')
         """
-        pass
+        self.buttons[row][col].config(text=symbol)
 
     def display_message(self, message):
         """Εμφανίζει ένα μήνυμα στον χρήστη (π.χ. ποιος κέρδισε)."""
-        pass
+        self.label.config(text=message)
+        messagebox.showinfo("Τέλος Παιχνιδιού", message)
 
     def start_game(self, game_logic, player1, player2):
         """
@@ -86,7 +88,8 @@ class TicTacToeWindow:
         """
         # Συνδέουμε τη λογική από το άλλο αρχείο με το παράθυρο
         self.game = game_logic
-        self.draw_board()     
+        self.draw_board() 
+
     def run(self):
         """Ξεκινάει τον κύριο βρόχο (main loop) της διεπαφής."""
        # Αυτό κρατάει το παράθυρο ανοιχτό
@@ -98,7 +101,12 @@ class TicTacToeWindow:
 
     def _get_current_player_obj(self):
         """Επιστρέφει το αντικείμενο Player που έχει σειρά, βάσει get_current_player()."""
-        pass
+        symbol = self.game.get_current_player()
+        if self.player1 and self.player1.symbol == symbol:
+            return self.player1
+        if self.player2 and self.player2.symbol == symbol:
+            return self.player2
+        return None
 
     def _on_cell_click(self, row, col):
         """
@@ -133,11 +141,24 @@ class TicTacToeWindow:
         Αν ναι, εκτελεί αυτόματα την κίνησή του.
         Λειτουργεί για κάθε συνδυασμό παικτών (human/bot).
         """
-        pass
+        current_p = self._get_current_player_obj()
+        if current_p and not current_p.is_human:
+            self._do_bot_turn(current_p)
 
     def _do_bot_turn(self, bot):
         """Εκτελεί μία κίνηση bot και μεταβαίνει στον επόμενο γύρο."""
-        pass
+        board = self.game.get_board()
+        move_index = bot.get_move(board)
+        
+        if move_index is not None:
+            r, c = divmod(move_index, 3)
+            symbol = bot.symbol
+            if self.game.make_move(r, c):
+                self.update_cell(r, c, symbol)
+                if not self._check_game_over():
+                    next_player = self.game.get_current_player()
+                    self.label.config(text=f"Σειρά του παίκτη: {next_player}")
+                    self.root.after(500, self._process_next_turn)
 
     def _check_game_over(self):
         """
