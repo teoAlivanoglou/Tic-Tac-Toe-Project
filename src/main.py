@@ -134,4 +134,4 @@ def main():
         print("Ισοπαλία!")
 
 if __name__ == "__main__":
-    main()
+    menu_epilogis()

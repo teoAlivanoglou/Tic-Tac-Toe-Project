@@ -88,6 +88,8 @@ class TicTacToeWindow:
         """
         # Συνδέουμε τη λογική από το άλλο αρχείο με το παράθυρο
         self.game = game_logic
+        self.player1 = player1 # παικτης 1
+        self.player2 = player2  # παικτης 2
         self.draw_board() 
 
     def run(self):
@@ -134,6 +136,8 @@ class TicTacToeWindow:
                 # Αν δεν τελείωσε, αλλάζουμε το κείμενο στην ετικέτα για τον επόμενο
                 next_player = self.game.get_current_player()
                 self.label.config(text=f"Σειρά του παίκτη: {next_player}")
+
+                self.root.after(500, self._process_next_turn) #παιζει το βοτ σε 500ms μετα απο τον κανονικο παικτη
 
     def _process_next_turn(self):
         """
