@@ -1,0 +1,3 @@
+SYMBOL_O = "⭕"
+SYMBOL_X = "❌"
+SYMBOL_EMPTY = " "
