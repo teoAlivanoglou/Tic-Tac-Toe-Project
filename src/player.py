@@ -89,10 +89,12 @@ class BetterBot(Player):
         # Δεν μπορεί ούτε να νικήσει ούτε χρειάζεται να μπλοκάρει, οπότε διαλέγει τυχαία
         return random.choice(empty_spaces)
 
+
 class MinimaxBot(Player):
     """
     Κλάση που αναπαριστά έναν αυτοματοποιημένο παίκτη (Bot) ο οποίος επιλέγει κινήσεις με την μέθοδο minimax.
     """
+
     is_human = False
 
     def get_move(self, game):
@@ -104,14 +106,13 @@ class MinimaxBot(Player):
         best_score = -1000
         move = -1
 
-        for i in range(len(board)):
-            if board[i] == " ":
-                board[i] = my_symbol
-                score = self.minimax(board, 0, False, my_symbol, enemy_symbol)
-                board[i] = " "
-                if score > best_score:
-                    best_score = score
-                    move = i
+        for i in game.get_empty_spaces():
+            board[i] = my_symbol
+            score = self.minimax(board, 0, False, my_symbol, enemy_symbol)
+            board[i] = " "
+            if score > best_score:
+                best_score = score
+                move = i
         return move
 
     def minimax(self, board, depth, is_maximizing, my_symbol, enemy_symbol):
@@ -128,7 +129,9 @@ class MinimaxBot(Player):
             for i in range(len(board)):
                 if board[i] == " ":
                     board[i] = my_symbol
-                    score = self.minimax(board, depth + 1, False, my_symbol, enemy_symbol)
+                    score = self.minimax(
+                        board, depth + 1, False, my_symbol, enemy_symbol
+                    )
                     board[i] = " "
                     best_score = max(score, best_score)
             return best_score
@@ -137,7 +140,9 @@ class MinimaxBot(Player):
             for i in range(len(board)):
                 if board[i] == " ":
                     board[i] = enemy_symbol
-                    score = self.minimax(board, depth + 1, True, my_symbol, enemy_symbol)
+                    score = self.minimax(
+                        board, depth + 1, True, my_symbol, enemy_symbol
+                    )
                     board[i] = " "
                     best_score = min(score, best_score)
             return best_score
@@ -145,16 +150,17 @@ class MinimaxBot(Player):
     def _winner(self, board, s):
         """Εσωτερική μέθοδος ελέγχου νικητή για την προσομοίωση."""
         # Έλεγχος γραμμών, στηλών και διαγωνίων (3x3)
-        return ((board[0] == board[1] == board[2] == s) or
-                (board[3] == board[4] == board[5] == s) or
-                (board[6] == board[7] == board[8] == s) or
-                (board[0] == board[3] == board[6] == s) or
-                (board[1] == board[4] == board[7] == s) or
-                (board[2] == board[5] == board[8] == s) or
-                (board[0] == board[4] == board[8] == s) or
-                (board[2] == board[4] == board[6] == s))
+        return (
+            (board[0] == board[1] == board[2] == s)
+            or (board[3] == board[4] == board[5] == s)
+            or (board[6] == board[7] == board[8] == s)
+            or (board[0] == board[3] == board[6] == s)
+            or (board[1] == board[4] == board[7] == s)
+            or (board[2] == board[5] == board[8] == s)
+            or (board[0] == board[4] == board[8] == s)
+            or (board[2] == board[4] == board[6] == s)
+        )
 
-    
 
 if __name__ == "__main__":
     # Κώδικας για μεμονωμένη δοκιμή των παικτών
