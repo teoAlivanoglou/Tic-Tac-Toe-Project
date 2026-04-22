@@ -14,6 +14,7 @@ class Game:
     def __init__(self, board_size):
         """Αρχικοποιεί το ταμπλό, τους παίκτες και τις μεταβλητές του παιχνιδιού."""
         self.board_size = board_size
+        self._board = [" "] * self.board_size**2
         self.reset()
 
     def start(self, player1, player2):
@@ -27,15 +28,14 @@ class Game:
         Εκτελεί το γύρο ενός παίκτη στη δεδομένη θέση.
 
         :param index: Η θέση της κίνησης
-        :return: True αν η κίνηση ήταν έγκυρη, False αλλιώς
+        :return: Πλειάδα (result, player) result η εγκυρότητα της κίνησης, player ο παίκτης που έπαιξε
         """
         current_player = self.get_current_player()
         if self._board[index] == " ":
             self._board[index] = current_player.symbol
-            # Σωστή κίνηση οπότε προχωράει η σειρά
             self.next_player()
-            return True
-        return False
+            return True, current_player
+        return False, None
 
     def get_board(self):
         """
@@ -101,7 +101,7 @@ class Game:
         if (board[0] == board[4] == board[8] == player_symbol) or (
             board[6] == board[4] == board[2] == player_symbol
         ):
-            return True  # Διαγώνιος
+            return True  # Διαγώνιοι
 
         return False
 
@@ -119,6 +119,7 @@ class Game:
         self._player1 = None
         self._player2 = None
         self._current_player = None
+        self.game_over = False
 
 
 if __name__ == "__main__":
