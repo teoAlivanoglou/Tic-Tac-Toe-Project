@@ -4,9 +4,12 @@
 """
 
 import tkinter as tk
-
 from game import Game
 from player import HumanPlayer, RandomBot, BetterBot, MinimaxBot
+import config
+
+import pyglet
+import os, sys
 
 
 class TicTacToeWindow:
@@ -23,6 +26,24 @@ class TicTacToeWindow:
         self.window.geometry("800x600")
         self.window.resizable(False, False)
 
+        # https://stackoverflow.com/a/1297407
+        dir_name = os.path.dirname(os.path.abspath(__file__))
+        # print(dir_name)
+        font_path = os.path.join(dir_name, "..", "fonts", config.FONT_PATH)
+        # print(font_path)
+
+        # https://stackoverflow.com/a/76001345
+        # https://stackoverflow.com/a/61353191
+        # https://stackoverflow.com/a/1325587
+        if os.name == "nt":
+            pyglet.options["win32_gdi_font"] = True
+        pyglet.font.add_file(font_path)
+
+        # fonts = tkfont.families()
+        # from pprint import pprint
+        # pprint(fonts)
+        # quit()
+
         self.main_menu = True
         self.cells = []
 
@@ -30,10 +51,29 @@ class TicTacToeWindow:
 
         self.main_menu_frame = self.create_main_menu_frame()
         self.game_board_frame = self.create_game_board_frame()
+
+        # https://www.reddit.com/r/learnpython/comments/1629dlo/comment/jxwaqcn/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
+        self.after_id = None
+
+        # https://stackoverflow.com/a/34373558
+        self.window.update_idletasks()
+        self.overlay_message = tk.Label(
+            self.window,
+            text="OVERLAY MESSAGE",
+            font=(config.FONT_NAME, 48),
+            fg="magenta",
+            wraplength=self.window.winfo_width() - 50,
+            justify="center",
+            background=self.window["bg"],
+        )
+
         self.select_view()
 
     def select_view(self):
         """Επιλέγει την ενεργή οθόνη του προγράμματος."""
+
+        self.overlay_message.place_forget()
+
         if self.main_menu:
             self.game_board_frame.pack_forget()
             self.main_menu_frame.pack(fill="both", expand=True)
@@ -58,47 +98,99 @@ class TicTacToeWindow:
         title = tk.Label(
             frame,
             text="Tic Tac Toe for PLHPRO",
-            font=("Arial", 36),
+            font=(config.FONT_NAME, 48),
         )
-        title.grid(row=0, column=0, pady=20)
+        title.grid(row=0, column=0, pady=20, columnspan=2)
 
         center_area = tk.Frame(frame)
-        center_area.grid(row=1, column=0)
+        center_area.grid(row=1, column=0, columnspan=2)
 
-        easy_btn = tk.Button(
+        self.selected_p1 = "Human"
+        self.selected_p2 = "Unbeatable"
+
+        self.p1_buttons = []
+        self.p2_buttons = []
+
+        options = ["Human", "Easy", "Hard", "Unbeatable"]
+
+        def style_buttons(button_list, selected):
+            """Αλλάζει το στυλ των κουμπιων ανάλογα με το αν είναι επιλεγμένο ή όχι."""
+            for button in button_list:
+                if button["text"] == selected:
+                    button.config(relief="sunken", bg="dodgerblue", fg="white")
+                else:
+                    button.config(relief="raised", bg="lightgray", fg="black")
+
+        def select_p1(choice):
+            self.selected_p1 = choice
+            style_buttons(self.p1_buttons, choice)
+
+        def select_p2(choice):
+            self.selected_p2 = choice
+            style_buttons(self.p2_buttons, choice)
+
+        p1_label = tk.Label(
             center_area,
-            text="Easy",
-            font=("Arial", 24),
-            width=20,
-            command=lambda: self.start_game("easy"),
+            text=f"Player 1 ({config.SYMBOL_X})",
+            font=(config.FONT_NAME, 18),
         )
-        medium_btn = tk.Button(
+        p1_label.pack(pady=(10, 5))
+
+        p1_row = tk.Frame(center_area)
+        p1_row.pack(pady=5)
+
+        for option in options:
+            btn = self._make_button(
+                p1_row,
+                text=option,
+                # font=("Arial", 16),
+                # width=15,
+                command=lambda v=option: select_p1(v),
+            )
+            btn.pack(side="left", padx=5)
+            self.p1_buttons.append(btn)
+
+        p2_label = tk.Label(
             center_area,
-            text="Medium",
-            font=("Arial", 24),
-            width=20,
-            command=lambda: self.start_game("medium"),
+            text=f"Player 2 ({config.SYMBOL_O})",
+            font=(config.FONT_NAME, 18),
         )
-        hard_btn = tk.Button(
-            center_area,
-            text="Hard",
-            font=("Arial", 24),
-            width=20,
-            command=lambda: self.start_game("hard"),
+        p2_label.pack(pady=(10, 5))
+
+        p2_row = tk.Frame(center_area)
+        p2_row.pack(pady=5)
+
+        for option in options:
+            btn = self._make_button(
+                p2_row,
+                text=option,
+                # font=("Arial", 16),
+                # width=15,
+                command=lambda v=option: select_p2(v),
+            )
+            btn.pack(side="left", padx=5)
+            self.p2_buttons.append(btn)
+
+        style_buttons(self.p1_buttons, self.selected_p1)
+        style_buttons(self.p2_buttons, self.selected_p2)
+
+        menu_frame = tk.Frame(frame)
+        menu_frame.grid(row=2, column=0, columnspan=2, pady=20)
+
+        start_btn = self._make_button(
+            menu_frame,
+            text="Start",
+            command=lambda: self.start_game(self.selected_p1, self.selected_p2),
         )
 
-        easy_btn.pack(pady=10)
-        medium_btn.pack(pady=10)
-        hard_btn.pack(pady=10)
-
-        exit_btn = tk.Button(
-            frame,
+        exit_btn = self._make_button(
+            menu_frame,
             text="Exit",
-            font=("Arial", 24),
-            width=20,
             command=self.window.destroy,
         )
-        exit_btn.grid(row=2, column=0, pady=20)
+
+        start_btn.grid(row=0, column=0, padx=10)
+        exit_btn.grid(row=0, column=1, padx=10)
 
         return frame
 
@@ -139,13 +231,11 @@ class TicTacToeWindow:
         for i in range(9):
             x = i % 3
             y = i // 3
-            btn = tk.Button(
+            btn = self._make_button(
                 self.board_frame,
-                text="",
-                font=("Arial", 42),
-                border=0,
-                width=2,
-                height=1,
+                text=" ",
+                font=(config.FONT_NAME, 42),
+                bg="SystemButtonFace",
                 command=lambda x=x, y=y: self._on_cell_click(x, y),
             )
             btn.grid(row=2 * y, column=2 * x, sticky="nsew")
@@ -154,28 +244,16 @@ class TicTacToeWindow:
         menu_frame = tk.Frame(frame)
         menu_frame.grid(column=0, row=1, pady=20)
 
-        self.overlay_message = tk.Label(
-            self.board_frame,
-            text="OVERLAY MESSAGE",
-            font=("Arial", 48),
-            fg="magenta",
-            background=self.window["bg"],
-        )
-
         # Τα κουμπιά για επανεκκίνηση του παιχνιδιού και έξοδο στο αρχικό μενού
-        restart_button = tk.Button(
+        restart_button = self._make_button(
             menu_frame,
             text="Restart",
-            font=("Arial", 14),
-            width=12,
             command=self._on_restart,
         )
 
-        quit_btn = tk.Button(
+        quit_btn = self._make_button(
             menu_frame,
             text="Quit",
-            font=("Arial", 14),
-            width=12,
             command=self._on_quit_to_menu,
         )
 
@@ -197,9 +275,9 @@ class TicTacToeWindow:
 
         self.overlay_message["fg"] = color
         self.overlay_message["text"] = message
-        self.overlay_message.place(x=150, y=200)
+        self.overlay_message.place(rely=0.5, relx=0.5, anchor="center")
 
-    def start_game(self, enemy):
+    def start_game(self, player1, player2):
         """
         Συνδέει τη λογική του παιχνιδιού και τους παίκτες με το UI
         και ξεκινάει ή κάνει reset το παιχνίδι.
@@ -208,25 +286,37 @@ class TicTacToeWindow:
         print("Game start!")
         # Για τώρα ο παίχτης 1 είναι πάντα άνθρωπος και έχει το Χ
         # Ήδη μπορούμε να βάλουμε 2 bot να παίξουν μεταξύ τους αν θέλουμε
-        self._player1 = BetterBot("X")
-        if enemy == "easy":
-            self._player2 = RandomBot("O")
-        elif enemy == "medium":
-            self._player2 = BetterBot("O")
-        elif enemy == "hard":
-            self._player2 = MinimaxBot("O")
+        # Ελπίζω τα σύμβολα να φαίνονται κανονικά...
+        if player1 == "Human":
+            self._player1 = HumanPlayer("Παίχτης 1", config.SYMBOL_X)
+        elif player1 == "Easy":
+            self._player1 = RandomBot("Random Bot 1", config.SYMBOL_X)
+        elif player1 == "Hard":
+            self._player1 = BetterBot("Better Bot 1", config.SYMBOL_X)
+        elif player1 == "Unbeatable":
+            self._player1 = MinimaxBot("Unbeatable Bot 1", config.SYMBOL_X)
         else:
             print("Invalid option")
 
-        self.enemy = enemy
+        if player2 == "Human":
+            self._player2 = HumanPlayer("Παίχτης 2", config.SYMBOL_O)
+        elif player2 == "Easy":
+            self._player2 = RandomBot("Random Bot 2", config.SYMBOL_O)
+        elif player2 == "Hard":
+            self._player2 = BetterBot("Better Bot 2", config.SYMBOL_O)
+        elif player2 == "Unbeatable":
+            self._player2 = MinimaxBot("Unbeatable Bot 2", config.SYMBOL_O)
+        else:
+            print("Invalid option")
+
         self.game.start(self._player1, self._player2)
 
         # Καθαρισμός UI για νέο παιχνίδι
-        self.overlay_message.place_forget()
         self.update_cells()
-
         self.main_menu = False
         self.select_view()
+
+        # Έναρξη του πρώτου γύρου του παιχνιδιού
         self._process_next_turn()
 
     def run(self):
@@ -261,7 +351,7 @@ class TicTacToeWindow:
         # Αν φτάσουμε εδώ σημαίνει ότι η κίνηση ήταν έγκυρη, οπότε ενημερώνουμε το UI
         self.update_cells()
 
-        print(f"Player played at {x}, {y}. Player symbol: {player.symbol}")
+        print(f"Player played at {x}, {y}.")
 
         if not self._check_game_over(player):
             print("Game is still on!")
@@ -277,10 +367,22 @@ class TicTacToeWindow:
         """
 
         if not self._get_current_player().is_human:
+            self._disable_cells()
             print("Bot's turn")
             self._do_bot_turn()
         else:
+            self._enable_cells()
             print("Human's turn")
+
+    def _disable_cells(self):
+        """Απενεργοποιεί όλα τα κελιά του ταμπλό."""
+        for cell in self.cells:
+            cell.config(state="disabled")
+
+    def _enable_cells(self):
+        """Ενεργοποιεί όλα τα κελιά του ταμπλό."""
+        for cell in self.cells:
+            cell.config(state="normal")
 
     def _do_bot_turn(self):
         """Εκτελεί μία κίνηση bot και μεταβαίνει στον επόμενο γύρο."""
@@ -295,7 +397,6 @@ class TicTacToeWindow:
         # Τα βάλαμε σε συνάρτηση για να μπορεί να κληθεί με το after.
         def make_bot_move():
             print(f"Bot played at {move // 3}, {move % 3}")
-            print(f"Board after bot move: {self.game.get_board()}")
             self.update_cells()
 
             if not self._check_game_over(bot):
@@ -306,7 +407,7 @@ class TicTacToeWindow:
                 print("Game over!")
 
         # 500ms καθυστέρηση για να φαίνεται οτί και καλά σκέφτεται το bot
-        self.window.after(500, make_bot_move)
+        self.after_id = self.window.after(500, make_bot_move)
 
     def _check_game_over(self, player):
         """
@@ -317,17 +418,27 @@ class TicTacToeWindow:
         # Υποθέτουμε ότι τελείωσε
         self.game.game_over = True
 
-        if self.game.check_win(self._player1.symbol):
-            # Εμφάνιση you win
-            self.display_message("You Won!", "green")
+        humans = sum(1 for p in (self._player1, self._player2) if p.is_human)
+
+        if self.game.check_win(player.symbol):
+            if humans == 1:  # Human vs Bot
+                if player.is_human:
+                    self.display_message(f"Ο {player.name} νίκησε!", "green")
+                else:
+                    self.display_message("Ωχ όχι. Έχασες.", "red")
+            elif humans == 2:  # Human vs Human
+                self.display_message(
+                    f"Ο {player.name} ({player.symbol}) νίκησε!", "green"
+                )
+            else:  # Bot vs Bot
+                self.display_message(
+                    f"Το {player.name} ({player.symbol}) κέρδισε!", "green"
+                )
+
             return True
-        elif self.game.check_win(self._player2.symbol):
-            # Εμφάνιση you lose
-            self.display_message("You Lost!", "red")
-            return True
+
         elif self.game.check_draw():
-            # Εμφάνιση draw
-            self.display_message("Draw!", "blue")
+            self.display_message("Ισοπαλία!", "blue")
             return True
 
         # Τελικά δεν τελείωσε
@@ -338,21 +449,55 @@ class TicTacToeWindow:
     def _on_restart(self):
         """Callback για το κουμπί Επανεκκίνησης."""
         self.game.reset()
-        self.start_game(self.enemy)
+        if self.after_id is not None:
+            self.window.after_cancel(self.after_id)
+            self.after_id = None
+        self.start_game(self.selected_p1, self.selected_p2)
 
     def _on_quit_to_menu(self):
         """Callback για το κουμπί Quit κατα την διάρκεια του παιχνιδιού."""
 
         self.game.reset()
+        if self.after_id is not None:
+            self.window.after_cancel(self.after_id)
+            self.after_id = None
         self.main_menu = True
         self.select_view()
+
+    def _make_button(self, parent, **kwargs):
+        """
+        Βοηθητική συνάρτηση που φτιάχνει ένα button με ορισμένες προεπιλογές
+        https://blacknerd.dev/day-27-tkinter-args-kwargs-creating-guis
+        """
+
+        font_size = kwargs.pop("font_size", 12)
+        font = kwargs.pop("font", (config.FONT_NAME, font_size))
+        width = kwargs.pop("width", 15)
+        height = kwargs.pop("height", 1)
+        bg = kwargs.pop("bg", "lightgray")
+        fg = kwargs.pop("fg", "black")
+        border = kwargs.pop("border", 0)
+        relief = kwargs.pop("relief", "raised")
+        activebackground = kwargs.pop("activebackground", "dodgerblue")
+        activeforeground = kwargs.pop("activeforeground", "white")
+
+        return tk.Button(
+            parent,
+            font=font,
+            width=width,
+            height=height,
+            bg=bg,
+            fg=fg,
+            border=border,
+            relief=relief,
+            activebackground=activebackground,
+            activeforeground=activeforeground,
+            disabledforeground=fg,
+            **kwargs,
+        )
 
 
 if __name__ == "__main__":
     # Κώδικας για μεμονωμένη δοκιμή του παραθύρου
     print("Δοκιμή παραθύρου (Window Test)")
-    window = TicTacToeWindow()
-    window.run()
-
-    print("Run? And done?")
     pass
