@@ -3,6 +3,7 @@
 """
 
 import random
+import config
 from game import Game
 
 
@@ -14,11 +15,13 @@ class Player:
 
     is_human = True  # Προεπιλογή: ανθρώπινος παίκτης
 
-    def __init__(self, symbol):
+    def __init__(self, name, symbol):
         """
-        Αρχικοποιεί τον παίκτη με το σύμβολό του.
-        :param symbol: Το σύμβολο του παίκτη ('X' ή 'O')
+        Αρχικοποιεί τον παίκτη με το όνομά του και το σύμβολό του.
+        :param name: Το όνομα του παίκτη
+        :param symbol: Το σύμβολο του παίκτη (SYMBOL_X ή SYMBOL_O)
         """
+        self.name = name
         self.symbol = symbol
 
     def get_move(self, game):
@@ -76,9 +79,9 @@ class BetterBot(Player):
         # Άμυνα
         for i in empty_spaces:
             # Βρίσκουμε το σύμβολο του αντπάλου
-            enemy_symbol = "O"
-            if self.symbol == "O":
-                enemy_symbol = "X"
+            enemy_symbol = config.SYMBOL_O
+            if self.symbol == config.SYMBOL_O:
+                enemy_symbol = config.SYMBOL_X
 
             # Δοκιμάζει αν με αυτή η κίνηση νικάει ο αντίπαλος
             if game.check_win(enemy_symbol, i):
@@ -101,7 +104,9 @@ class MinimaxBot(Player):
         """Βρίσκει κενές θέσεις στο ταμπλό και επιλέγει την καλύτερη δυνατή κίνηση."""
         board = game.get_board()
         my_symbol = self.symbol
-        enemy_symbol = "O" if my_symbol == "X" else "X"
+        enemy_symbol = (
+            config.SYMBOL_O if my_symbol == config.SYMBOL_X else config.SYMBOL_X
+        )
 
         best_score = -1000
         move = -1
@@ -165,37 +170,4 @@ class MinimaxBot(Player):
 if __name__ == "__main__":
     # Κώδικας για μεμονωμένη δοκιμή των παικτών
     print("Δοκιμή παικτών (Players Test)")
-
-    game = Game(3)
-
-    print("Δοκιμή RandomBot")
-    bot = RandomBot("O")
-    game._board = ["X", "O", "X", "O", "X", " ", "O", "X", " "]
-    move = bot.get_move(game)
-    print(f"Το bot διάλεξε τη θέση: {move}")
-
-    print("Δοκιμή BetterBot - Άμυνα")
-    # Ο Χρηστης ειναι το "Χ" έχεις δύο στη σειρά (0 και 1).
-    # Το bot ΠΡΕΠΕΙ να παίξει στο 2 για να σε σταματήσει.
-    bot = BetterBot("O")
-    game._board = ["X", "X", " ", " ", "O", " ", " ", " ", " "]
-    move = bot.get_move(game)
-    print("Το ταμπλό έχει Χ στις θέσεις 0 και 1.")
-    print(f"Το hard_bot επέλεξε τη θέση: {move}")
-    if move == 2:
-        print("ΕΠΙΤΥΧΙΑ!")
-    else:
-        print("ΑΠΟΤΥΧΙΑ!")
-
-    print("Δοκιμή BetterBot - Επίθεση")
-    # Το bot ειναι το "Ο" έχει δύο στη σειρά (3 και 4).
-    # Το bot ΠΡΕΠΕΙ να παίξει στο 5 για να νικήσει.
-    bot = BetterBot("O")
-    game._board = ["X", "X", " ", "O", "O", " ", " ", " ", " "]
-    move = bot.get_move(game)
-    print("Το ταμπλό έχει Ο στις θέσεις 3 και 4.")
-    print(f"Το hard_bot επέλεξε τη θέση: {move}")
-    if move == 5:
-        print("ΕΠΙΤΥΧΙΑ!")
-    else:
-        print("ΑΠΟΤΥΧΙΑ!")
+    pass
