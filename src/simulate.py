@@ -3,9 +3,10 @@ Simulation script: runs N games για κάθε matchup bot και εκτυπώ�
 """
 
 from game import Game
-from player import RandomBot, BetterBot
+from player import RandomBot, BetterBot, MinimaxBot
+import config
 
-GAMES = 200_000
+GAMES = 1_000
 
 
 def run_simulation(player1_cls, player2_cls, n=GAMES):
@@ -15,23 +16,30 @@ def run_simulation(player1_cls, player2_cls, n=GAMES):
 
     for _ in range(n):
         game = Game(3)
-        p1 = player1_cls("X")
-        p2 = player2_cls("O")
+        p1 = player1_cls("P1", config.SYMBOL_X)
+        p2 = player2_cls("P2", config.SYMBOL_O)
         game.start(p1, p2)
 
         result = None
-        for _ in range(9):
+        while True:
             player = game.get_current_player()
             move = player.get_move(game)
-            game.play_turn(move)
+
+            ok, played_player = game.play_turn(move)
+
+            if not ok:
+                raise ValueError(f"Illegal move {move} by {player.name}")
 
             if game.check_win(player.symbol):
                 result = player.symbol
                 break
+            elif game.check_draw():
+                result = " "
+                break
 
-        if result == "X":
+        if result == config.SYMBOL_X:
             p1_wins += 1
-        elif result == "O":
+        elif result == config.SYMBOL_O:
             p2_wins += 1
         else:
             draws += 1
@@ -51,10 +59,15 @@ def print_stats(label, p1_name, p2_name, p1_wins, p2_wins, draws):
 
 
 matchups = [
-    ("BetterBot vs BetterBot", BetterBot, BetterBot),
     ("RandomBot vs RandomBot", RandomBot, RandomBot),
-    ("RandomBot vs BetterBot", RandomBot, BetterBot),
     ("BetterBot vs RandomBot", BetterBot, RandomBot),
+    ("MinimaxBot vs RandomBot", MinimaxBot, RandomBot),
+    ("RandomBot vs BetterBot", RandomBot, BetterBot),
+    ("BetterBot vs BetterBot", BetterBot, BetterBot),
+    ("MinimaxBot vs BetterBot", MinimaxBot, BetterBot),
+    ("RandomBot vs MinimaxBot", RandomBot, MinimaxBot),
+    ("BetterBot vs MinimaxBot", BetterBot, MinimaxBot),
+    ("MinimaxBot vs MinimaxBot", MinimaxBot, MinimaxBot),
 ]
 
 print(
@@ -62,9 +75,10 @@ print(
 )
 
 for label, p1_cls, p2_cls in matchups:
+    print(f"\n{'=' * 50}")
     print(f"  Simulating: {label}...", end="", flush=True)
     p1_wins, p2_wins, draws = run_simulation(p1_cls, p2_cls)
-    print(" done.")
+    print(" done.", end="")
     print_stats(label, p1_cls.__name__, p2_cls.__name__, p1_wins, p2_wins, draws)
 
 print(f"\n{'=' * 50}")
