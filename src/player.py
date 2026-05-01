@@ -79,9 +79,9 @@ class BetterBot(Player):
         # Άμυνα
         for i in empty_spaces:
             # Βρίσκουμε το σύμβολο του αντπάλου
-            enemy_symbol = config.SYMBOL_O
-            if self.symbol == config.SYMBOL_O:
-                enemy_symbol = config.SYMBOL_X
+            enemy_symbol = (
+                config.SYMBOL_X if self.symbol == config.SYMBOL_O else config.SYMBOL_O
+            )
 
             # Δοκιμάζει αν με αυτή η κίνηση νικάει ο αντίπαλος
             if game.check_win(enemy_symbol, i):
@@ -105,8 +105,12 @@ class MinimaxBot(Player):
         board = game.get_board()
         my_symbol = self.symbol
         enemy_symbol = (
-            config.SYMBOL_O if my_symbol == config.SYMBOL_X else config.SYMBOL_X
+            config.SYMBOL_X if my_symbol == config.SYMBOL_O else config.SYMBOL_O
         )
+
+        # Θα αποθηκεύω τα minimax scores για να μην υπολογίζω το ίδιο board πάνω απο μία φορά (memoization)
+        # https://www.khanacademy.org/computing/computer-science/algorithms/recursive-algorithms/a/improving-efficiency-of-recursive-functions
+        self.cache = {}
 
         best_score = -1000
         move = -1
@@ -122,10 +126,16 @@ class MinimaxBot(Player):
 
     def minimax(self, board, depth, is_maximizing, my_symbol, enemy_symbol):
         """Αναδρομική μέθοδος minimax για τον υπολογισμό του σκορ κάθε κίνησης."""
+
+        # Ελέγχω αν έχω ήδη υπολογίσει αυτό το board και αν ναι, το επιστρέφω
+        key = (tuple(board), is_maximizing)
+        if key in self.cache:
+            return self.cache[key]
+
         if self._winner(board, my_symbol):
-            return 1
+            return 10 - depth
         if self._winner(board, enemy_symbol):
-            return -1
+            return depth - 10
         if " " not in board:
             return 0
 
@@ -139,7 +149,6 @@ class MinimaxBot(Player):
                     )
                     board[i] = " "
                     best_score = max(score, best_score)
-            return best_score
         else:
             best_score = 1000
             for i in range(len(board)):
@@ -150,7 +159,9 @@ class MinimaxBot(Player):
                     )
                     board[i] = " "
                     best_score = min(score, best_score)
-            return best_score
+
+        self.cache[key] = best_score
+        return best_score
 
     def _winner(self, board, s):
         """Εσωτερική μέθοδος ελέγχου νικητή για την προσομοίωση."""
