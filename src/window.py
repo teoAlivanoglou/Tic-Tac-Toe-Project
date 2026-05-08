@@ -498,6 +498,16 @@ class TicTacToeWindow:
 
 
 if __name__ == "__main__":
-    # Κώδικας για μεμονωμένη δοκιμή του παραθύρου
-    print("Δοκιμή παραθύρου (Window Test)")
-    pass
+    # Κώδικας για αυτόνομη εκκίνηση και δοκιμή του GUI
+    print("=== Εκκίνηση Δοκιμής Γραφικού Περιβάλλοντος (GUI Test) ===")
+    
+    # Δημιουργία του αντικειμένου της εφαρμογής
+    app = TicTacToeWindow()
+    
+    # Εκτύπωση πληροφοριών στο τερματικό για επιβεβαίωση
+    print(f"Window Title: Tic Tac Toe")
+    print(f"Default Font: {config.FONT_NAME}")
+    print(f"Initial State: Main Menu")
+    
+    # Εκκίνηση του mainloop
+    app.run()

@@ -121,8 +121,58 @@ class Game:
         self._current_player = None
         self.game_over = False
 
-
+#Απο εδω και κάτω βαζω κώδικα για φωτογραφιες στην ομαδικη εκθεση 
 if __name__ == "__main__":
-    # Κώδικας για μεμονωμένη δοκιμή της λογικής του παιχνιδιού
-    print("Δοκιμή λογικής παιχνιδιού (Game Logic Test)")
-    pass
+    # Βοηθητική κλάση για τη δοκιμή
+    class MockPlayer:
+        def __init__(self, name, symbol):
+            self.name = name
+            self.symbol = symbol
+
+    def print_current_board(game):
+        b = game.get_board()
+        print(f" {b[0]} | {b[1]} | {b[2]} ")
+        print("---+---+---")
+        print(f" {b[3]} | {b[4]} | {b[5]} ")
+        print("---+---+---")
+        print(f" {b[6]} | {b[7]} | {b[8]} ")
+        print()
+
+    p1 = MockPlayer("Player1", "X")
+    p2 = MockPlayer("Player2", "O")
+    game = Game(3)
+
+    print("-" * 40)
+    print(" TEST 1: Έλεγχος Νίκης (Οριζόντια)")
+    print("-" * 40)
+    game.start(p1, p2)
+    # Σειρά κινήσεων για νίκη του Χ στην πρώτη σειρά
+    for move in [0, 3, 1, 4, 2]: 
+        game.play_turn(move)
+    print_current_board(game)
+    if game.check_win("X"):
+        print(" Αποτέλεσμα: Το σύστημα αναγνώρισε τη ΝΙΚΗ του X!")
+
+    print("\n" + "-" * 40)
+    print("TEST 2: Έλεγχος Ισοπαλίας")
+    print("-" * 40)
+    game.reset()
+    game.start(p1, p2)
+    # Κινήσεις που οδηγούν σε ισοπαλία
+    for move in [0, 1, 2, 4, 3, 5, 7, 6, 8]:
+        game.play_turn(move)
+    print_current_board(game)
+    if game.check_draw():
+        print(" Αποτέλεσμα: Το σύστημα αναγνώρισε την ΙΣΟΠΑΛΙΑ!")
+
+    print("\n" + "-" * 40)
+    print(" TEST 3: Έλεγχος Παράνομης Κίνησης")
+    print("-" * 40)
+    game.reset()
+    game.start(p1, p2)
+    game.play_turn(4) # Παίζει ο Π1 στο κέντρο
+    print("Ο Player1 έπαιξε στο κέντρο (4).")
+    success, _ = game.play_turn(4) # Πάει ο Π2 να παίξει στο ίδιο
+    if not success:
+        print(" Αποτέλεσμα: Η κίνηση απορρίφθηκε σωστά!")
+    print("-" * 40)
