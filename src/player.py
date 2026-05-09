@@ -131,7 +131,8 @@ class MinimaxBot(Player):
         key = (tuple(board), is_maximizing)
         if key in self.cache:
             return self.cache[key]
-
+        
+        # Τερματικές καταστάσεις (Νίκη, Ήττα, Ισοπαλία)
         if self._winner(board, my_symbol):
             return 10 - depth
         if self._winner(board, enemy_symbol):
@@ -177,7 +178,8 @@ class MinimaxBot(Player):
             or (board[2] == board[4] == board[6] == s)
         )
 
-#Απο εδω και κάτω βαζω κώδικα για φωτογραφιες στην ομαδικη εκθεση 
+# --- Τμήμα Δοκιμών (Testing) ---
+# Χρησιμοποιήθηκε για την επαλήθευση της ορθότητας των αποφάσεων του Minimax.
 if __name__ == "__main__":
     # 1. Προετοιμασία Παιχνιδιού
     game = Game(3)
@@ -208,7 +210,7 @@ if __name__ == "__main__":
     print("\n[Υπολογισμός κίνησης...]")
     best_move = minimax_bot.get_move(game)
     
-    print(f"\nΑΠΟΦΑΣΗ BOT: Το {minimax_bot.name} επέλεξε τη θέση {best_move}")
+    print(f"\n BOT: το {minimax_bot.name} επέλεξε τη θέση {best_move}")
     
     if best_move == 2:
         print("RESULT: SUCCESS  (Το Bot επέλεξε τη νίκη)")

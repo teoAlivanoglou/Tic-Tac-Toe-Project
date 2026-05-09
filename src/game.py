@@ -33,7 +33,7 @@ class Game:
         current_player = self.get_current_player()
         if self._board[index] == " ":
             self._board[index] = current_player.symbol
-            self.next_player()
+            self.next_player() # Μετά από κάθε έγκυρη κίνηση, αλλάζει η σειρά
             return True, current_player
         return False, None
 
@@ -121,7 +121,9 @@ class Game:
         self._current_player = None
         self.game_over = False
 
-#Απο εδω και κάτω βαζω κώδικα για φωτογραφιες στην ομαδικη εκθεση 
+# --- Τμήμα Ελέγχου & Δοκιμών (Main) ---
+# Ο κώδικας αυτός τρέχει μόνο αν εκτελεστεί το αρχείο απευθείας.
+# Χρησιμοποιήθηκε για τη λήψη screenshots στην ομαδική έκθεση.
 if __name__ == "__main__":
     # Βοηθητική κλάση για τη δοκιμή
     class MockPlayer:
@@ -146,7 +148,7 @@ if __name__ == "__main__":
     print(" TEST 1: Έλεγχος Νίκης (Οριζόντια)")
     print("-" * 40)
     game.start(p1, p2)
-    # Σειρά κινήσεων για νίκη του Χ στην πρώτη σειρά
+    # Προσομοίωση κινήσεων: Ο Χ κερδίζει στην πρώτη σειρά
     for move in [0, 3, 1, 4, 2]: 
         game.play_turn(move)
     print_current_board(game)
@@ -158,7 +160,7 @@ if __name__ == "__main__":
     print("-" * 40)
     game.reset()
     game.start(p1, p2)
-    # Κινήσεις που οδηγούν σε ισοπαλία
+    # Σενάριο κινήσεων για πλήρες ταμπλό χωρίς νικητή
     for move in [0, 1, 2, 4, 3, 5, 7, 6, 8]:
         game.play_turn(move)
     print_current_board(game)

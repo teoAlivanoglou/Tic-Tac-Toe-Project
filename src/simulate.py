@@ -24,19 +24,22 @@ def run_simulation(player1_cls, player2_cls, n=GAMES):
         while True:
             player = game.get_current_player()
             move = player.get_move(game)
-
+ 
+            # Επικύρωση κίνησης
             ok, played_player = game.play_turn(move)
 
             if not ok:
                 raise ValueError(f"Illegal move {move} by {player.name}")
-
+            
+            # Έλεγχος κατάστασης παιχνιδιού
             if game.check_win(player.symbol):
                 result = player.symbol
                 break
             elif game.check_draw():
                 result = " "
                 break
-
+        
+        # Καταγραφή αποτελέσματος
         if result == config.SYMBOL_X:
             p1_wins += 1
         elif result == config.SYMBOL_O:
@@ -57,7 +60,7 @@ def print_stats(label, p1_name, p2_name, p1_wins, p2_wins, draws):
     print(f"  Draws             : {draws:>7,}  ({draws / total * 100:5.1f}%)")
     print(f"  Total games       : {total:>7,}")
 
-
+# Λίστα με όλα τα πιθανά ζευγάρια για δοκιμή
 matchups = [
     ("RandomBot vs RandomBot", RandomBot, RandomBot),
     ("BetterBot vs RandomBot", BetterBot, RandomBot),
