@@ -131,7 +131,8 @@ class MinimaxBot(Player):
         key = (tuple(board), is_maximizing)
         if key in self.cache:
             return self.cache[key]
-
+        
+        # Τερματικές καταστάσεις (Νίκη, Ήττα, Ισοπαλία)
         if self._winner(board, my_symbol):
             return 10 - depth
         if self._winner(board, enemy_symbol):
@@ -177,8 +178,42 @@ class MinimaxBot(Player):
             or (board[2] == board[4] == board[6] == s)
         )
 
-
+# --- Τμήμα Δοκιμών (Testing) ---
+# Χρησιμοποιήθηκε για την επαλήθευση της ορθότητας των αποφάσεων του Minimax.
 if __name__ == "__main__":
-    # Κώδικας για μεμονωμένη δοκιμή των παικτών
-    print("Δοκιμή παικτών (Players Test)")
-    pass
+    # 1. Προετοιμασία Παιχνιδιού
+    game = Game(3)
+    # Ορίζουμε σύμβολα βάσει του config
+    minimax_bot = MinimaxBot("Minimax AI", config.SYMBOL_X)
+    
+    # 2. Δημιουργία "Κρίσιμου" Ταμπλό
+    # Το Χ (Minimax) παίζει. 
+    # Έχει δύο επιλογές: 
+    # α) Να κερδίσει στη θέση 2 
+    # β) Να εμποδίσει το Ο (που έχει 2 σύμβολα στις θέσεις 3,4)
+    
+    test_board = [
+        config.SYMBOL_X, config.SYMBOL_X, config.SYMBOL_EMPTY, # Γραμμή 0: [X, X,  ] -> Εδώ πρέπει να παίξει
+        config.SYMBOL_O, config.SYMBOL_O, config.SYMBOL_EMPTY, # Γραμμή 1: [O, O,  ]
+        config.SYMBOL_EMPTY, config.SYMBOL_EMPTY, config.SYMBOL_EMPTY
+    ]
+    game._board = test_board
+
+    print("\nΤρέχουσα Κατάσταση Ταμπλό (Το X παίζει):")
+    board = game.get_board()
+    print(f" {board[0]} | {board[1]} | {board[2]} ")
+    print("---+---+---")
+    print(f" {board[3]} | {board[4]} | {board[5]} ")
+    print("---+---+---")
+    print(f" {board[6]} | {board[7]} | {board[8]} ")
+
+    print("\n[Υπολογισμός κίνησης...]")
+    best_move = minimax_bot.get_move(game)
+    
+    print(f"\n BOT: το {minimax_bot.name} επέλεξε τη θέση {best_move}")
+    
+    if best_move == 2:
+        print("RESULT: SUCCESS  (Το Bot επέλεξε τη νίκη)")
+    else:
+        print("RESULT: FAILED ")
+    print("="*50)

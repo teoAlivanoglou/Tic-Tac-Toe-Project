@@ -29,7 +29,7 @@ class TicTacToeWindow:
         # https://stackoverflow.com/a/1297407
         dir_name = os.path.dirname(os.path.abspath(__file__))
         # print(dir_name)
-        font_path = os.path.join(dir_name, "..", "fonts", config.FONT_PATH)
+        font_path = os.path.join(dir_name, "fonts", config.FONT_PATH)
         # print(font_path)
 
         # https://stackoverflow.com/a/76001345
@@ -498,6 +498,16 @@ class TicTacToeWindow:
 
 
 if __name__ == "__main__":
-    # Κώδικας για μεμονωμένη δοκιμή του παραθύρου
-    print("Δοκιμή παραθύρου (Window Test)")
-    pass
+    # Κώδικας για αυτόνομη εκκίνηση και δοκιμή του GUI
+    print("=== Εκκίνηση Δοκιμής Γραφικού Περιβάλλοντος (GUI Test) ===")
+    
+    # Δημιουργία του αντικειμένου της εφαρμογής
+    app = TicTacToeWindow()
+    
+    # Εκτύπωση πληροφοριών στο τερματικό για επιβεβαίωση
+    print(f"Window Title: Tic Tac Toe")
+    print(f"Default Font: {config.FONT_NAME}")
+    print(f"Initial State: Main Menu")
+    
+    # Εκκίνηση του mainloop
+    app.run()
