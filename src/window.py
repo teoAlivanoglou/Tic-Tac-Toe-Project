@@ -29,7 +29,7 @@ class TicTacToeWindow:
         # https://stackoverflow.com/a/1297407
         dir_name = os.path.dirname(os.path.abspath(__file__))
         # print(dir_name)
-        font_path = os.path.join(dir_name, "..", "fonts", config.FONT_PATH)
+        font_path = os.path.join(dir_name, "fonts", config.FONT_PATH)
         # print(font_path)
 
         # https://stackoverflow.com/a/76001345
